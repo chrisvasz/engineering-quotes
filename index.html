@@ -59,7 +59,6 @@
         font-size: 1.1rem;
         line-height: 1.6;
         margin-bottom: 1rem;
-        font-style: italic;
       }
 
       .quote-text p {
@@ -116,6 +115,36 @@
       .weekend-message p {
         font-size: 1.2rem;
       }
+
+      .nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .nav-buttons button {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: #333;
+      }
+
+      .nav-buttons button:hover {
+        background: #f0f0f0;
+      }
+
+      .nav-buttons button:disabled {
+        color: #aaa;
+        cursor: default;
+      }
+
+      .nav-buttons button:disabled:hover {
+        background: white;
+      }
     </style>
   </head>
   <body>
@@ -125,6 +154,10 @@
         <h1>Engineering Quotes</h1>
         <div class="date" id="dateDisplay"></div>
         <div class="cycle" id="cycleDisplay"></div>
+        <div class="nav-buttons">
+          <button id="prevBtn">← Previous</button>
+          <button id="nextBtn">Next →</button>
+        </div>
       </header>
       <main id="content"></main>
     </div>
@@ -202,12 +235,12 @@
             'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
-          text: "Novelty is a loan you repay in outages, hiring, and cognitive overhead. Treat your technology choices like an organization with a small `innovation token` budget. Spend one each time you adopt something materially non-standard. You can't afford many. The punchline isn't `never innovate.` It's `innovate only where you're uniquely paid to innovate`. Everything else should default to boring, because boring has known failure modes.",
+          text: 'Novelty is a loan you repay in outages, hiring, and cognitive overhead. Treat your technology choices like an organization with a small "innovation token" budget. Spend one each time you adopt something materially non-standard. You can\'t afford many. The punchline isn\'t "never innovate." It\'s "innovate only where you\'re uniquely paid to innovate". Everything else should default to boring, because boring has known failure modes.',
           author:
             'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
-          text: "The best code is the code you never had to write. Nobody gets promoted for deleting code, even though deletion often improves a system more than addition. Every line of code you don't write is a line you never have to debug, maintain, or explain. Before you build, exhaust the question: `What would happen if we just… didn't?` Sometimes the answer is `nothing bad,` and that's your solution.",
+          text: 'The best code is the code you never had to write. Nobody gets promoted for deleting code, even though deletion often improves a system more than addition. Every line of code you don\'t write is a line you never have to debug, maintain, or explain. Before you build, exhaust the question: "What would happen if we just… didn\'t?" Sometimes the answer is "nothing bad," and that\'s your solution.',
           author:
             'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
@@ -238,6 +271,8 @@
       const REFERENCE_MONDAY = new Date(2026, 0, 5);
       const CYCLE_LENGTH = 20; // 4 weeks of weekdays
 
+      let dayOffset = 0;
+
       function isWeekend(date) {
         const day = date.getDay();
         return day === 0 || day === 6;
@@ -245,26 +280,39 @@
 
       function countWeekdaysBetween(startDate, endDate) {
         let count = 0;
-        const current = new Date(startDate);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
-        while (current < endDate) {
-          if (!isWeekend(current)) {
-            count++;
+        if (start <= end) {
+          const current = new Date(start);
+          while (current < end) {
+            if (!isWeekend(current)) {
+              count++;
+            }
+            current.setDate(current.getDate() + 1);
           }
-          current.setDate(current.getDate() + 1);
+        } else {
+          const current = new Date(start);
+          current.setDate(current.getDate() - 1);
+          while (current >= end) {
+            if (!isWeekend(current)) {
+              count--;
+            }
+            current.setDate(current.getDate() - 1);
+          }
         }
         return count;
       }
 
-      function getCycleDay(today) {
-        const weekdays = countWeekdaysBetween(REFERENCE_MONDAY, today);
-        return weekdays % CYCLE_LENGTH;
+      function getCycleDay(date) {
+        const weekdays = countWeekdaysBetween(REFERENCE_MONDAY, date);
+        return ((weekdays % CYCLE_LENGTH) + CYCLE_LENGTH) % CYCLE_LENGTH;
       }
 
       function getQuotesForDay(cycleDay) {
-        const quotesPerDay = Math.ceil(quotes.length / CYCLE_LENGTH);
-        const startIndex = cycleDay * quotesPerDay;
-        const endIndex = Math.min(startIndex + quotesPerDay, quotes.length);
+        const quotesPerDay = quotes.length / CYCLE_LENGTH;
+        const startIndex = Math.floor(cycleDay * quotesPerDay);
+        const endIndex = Math.floor((cycleDay + 1) * quotesPerDay);
         return quotes.slice(startIndex, endIndex);
       }
 
@@ -277,17 +325,25 @@
         });
       }
 
+      function getDateWithOffset(offset) {
+        const date = new Date();
+        date.setHours(0, 0, 0, 0);
+        date.setDate(date.getDate() + offset);
+        return date;
+      }
+
       function render() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const viewDate = getDateWithOffset(dayOffset);
         const dateDisplay = document.getElementById('dateDisplay');
         const cycleDisplay = document.getElementById('cycleDisplay');
         const content = document.getElementById('content');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
 
-        dateDisplay.textContent = formatDate(today);
+        dateDisplay.textContent = formatDate(viewDate);
 
-        if (isWeekend(today)) {
-          cycleDisplay.textContent = '';
+        if (isWeekend(viewDate)) {
+          cycleDisplay.textContent = `Day - of ${CYCLE_LENGTH}`;
           content.innerHTML = `
             <div class="weekend-message">
               <p>Quotes resume Monday.</p>
@@ -296,7 +352,7 @@
           return;
         }
 
-        const cycleDay = getCycleDay(today);
+        const cycleDay = getCycleDay(viewDate);
         cycleDisplay.textContent = `Day ${cycleDay + 1} of ${CYCLE_LENGTH}`;
 
         const todaysQuotes = getQuotesForDay(cycleDay);
@@ -305,7 +361,7 @@
           .map(
             quote => `
           <div class="quote-card">
-            <div class="quote-text">"${marked.parse(quote.text)}"</div>
+            <div class="quote-text">${marked.parse(quote.text)}</div>
             <div class="quote-author">— ${marked.parseInline(
               quote.author,
             )}</div>
@@ -314,6 +370,16 @@
           )
           .join('');
       }
+
+      document.getElementById('prevBtn').addEventListener('click', () => {
+        dayOffset--;
+        render();
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        dayOffset++;
+        render();
+      });
 
       render();
     </script>
