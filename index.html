@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engineering Quotes</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+        padding: 2rem;
+        color: #333;
+      }
+
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      header .date {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      header .cycle {
+        color: #888;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+      }
+
+      .quote-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .quote-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        font-style: italic;
+      }
+
+      .quote-author {
+        color: #666;
+        font-size: 0.9rem;
+        text-align: right;
+      }
+
+      .weekend-message {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+      }
+
+      .weekend-message p {
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Engineering Quotes</h1>
+        <div class="date" id="dateDisplay"></div>
+        <div class="cycle" id="cycleDisplay"></div>
+      </header>
+      <main id="content"></main>
+    </div>
+
+    <script>
+      const quotes = [
+        {
+          text: 'Debugging is twice as hard as writing the code in the first place. If you write code as cleverly as possible, you are by definition not smart enough to debug it.',
+          author: 'Brian Kernighan',
+        },
+        {
+          text: 'Programs must be written for people to read, and only incidentally for machines to execute.',
+          author: 'Hal Abelson',
+        },
+        {
+          text: 'Make it work, make it right, make it fast.',
+          author: 'Kent Beck',
+        },
+        {
+          text: "It's harder to read code than to write it.",
+          author: 'Joel Spolsky',
+        },
+        {
+          text: 'Measuring programming progress by lines of code is like measuring aircraft building progress by weight.',
+          author: 'Bill Gates',
+        },
+        {
+          text: "You can't create the right abstraction until you fully understand the code, but the existence of the wrong abstraction may prevent you from ever doing so. This suggests that you should not reach for abstractions, but instead, you should resist them until they absolutely insist upon being created.",
+          author: 'Sandi Metz, 99 Bottles of OOP Chapter 1',
+        },
+        {
+          text: 'When you feel the need to write a comment, first try to refactor the code so that any comment becomes superfluous.',
+          author: '???',
+        },
+        {
+          text: "“But what if we need to scale?” or “What about future requirements?” These fears often drive teams to over-architect their solutions. Here's the reality: the cost of changing a simple system is usually lower than the cost of maintaining an over-engineered one. The key is understanding that good architecture isn't about predicting the future — it's about making future changes as painless as possible.",
+          author: 'Simen A. W. Olsen, Your Perfect Architecture Sucks',
+        },
+        {
+          text: 'Programming is the art of telling other humans what you want the computer to do.',
+          author: '???',
+        },
+        {
+          text: '1. Make requirements less dumb. 2. Delete the part or process step. 3. Optimize. 4. Accelerate. 5. Automate.',
+          author: 'Elon Musk',
+        },
+        {
+          text: 'Good judgement comes from experience, and experience comes from bad judgement.',
+          author: 'Unknown',
+        },
+        {
+          text: 'Any improvements not at the bottleneck are waste.',
+          author: 'Dr. Eli Goldratt',
+        },
+        {
+          text: 'The temptation of smart engineers will be to solve problems that should not exist.',
+          author: 'Elon Musk',
+        },
+        {
+          text: 'Duplication is cheaper than the wrong abstraction.',
+          author: 'Sandi Metz',
+        },
+        {
+          text: "If you win every debate, you're probably accumulating silent resistance.",
+          author: 'Addy Osmani',
+        },
+        {
+          text: "First do it, then do it right, then do it better. Get the ugly prototype in front of users. Write the messy first draft of the design doc. Ship the MVP that embarrasses you slightly. You'll learn more from one week of real feedback than a month of theoretical debate.",
+          author: 'Addy Osmani, 21 Lessons',
+        },
+        {
+          text: 'Your code is a strategy memo to strangers who will maintain it at 2am during an outage. Optimize for their comprehension, not your elegance. The senior engineers I respect most have learned to trade cleverness for clarity, every time.',
+          author: 'Addy Osmani, 21 Lessons',
+        },
+        {
+          text: "Novelty is a loan you repay in outages, hiring, and cognitive overhead. Treat your technology choices like an organization with a small `innovation token` budget. Spend one each time you adopt something materially non-standard. You can't afford many. The punchline isn't `never innovate.` It's `innovate only where you're uniquely paid to innovate`. Everything else should default to boring, because boring has known failure modes.",
+          author: 'Addy Osmani, 21 Lessons',
+        },
+        {
+          text: "The best code is the code you never had to write. Nobody gets promoted for deleting code, even though deletion often improves a system more than addition. Every line of code you don't write is a line you never have to debug, maintain, or explain. Before you build, exhaust the question: `What would happen if we just… didn't?` Sometimes the answer is `nothing bad,` and that's your solution.",
+          author: 'Addy Osmani, 21 Lessons',
+        },
+        {
+          text: 'Writing forces clarity. The fastest way to learn something better is to try teaching it. When I explain a concept to others - in a doc, a talk, a code review comment, even just chatting with AI - I discover the gaps in my own understanding. The act of making something legible to someone else makes it more legible to me. If you think you understand something, try to explain it simply. The places where you stumble are the places where your understanding is shallow. Teaching is debugging your own mental models.',
+          author: 'Addy Osmani, 21 Lessons',
+        },
+        {
+          text: 'Writing is thinking.',
+          author: '???',
+        },
+        {
+          text: 'Everything you learn in the gym applies to life. Reps are the only way to get better, and showing up over and over is the only hack that works.',
+          author: 'Arnold Schwarzenegger',
+        },
+        {
+          text: "You don't rise to the level of your goals. You fall to the level of your systems.",
+          author: 'James Clear',
+        },
+      ];
+
+      // Reference Monday for the 4-week cycle (Jan 5, 2026 is a Monday)
+      const REFERENCE_MONDAY = new Date(2026, 0, 5);
+      const CYCLE_LENGTH = 20; // 4 weeks of weekdays
+
+      function isWeekend(date) {
+        const day = date.getDay();
+        return day === 0 || day === 6;
+      }
+
+      function countWeekdaysBetween(startDate, endDate) {
+        let count = 0;
+        const current = new Date(startDate);
+
+        while (current < endDate) {
+          if (!isWeekend(current)) {
+            count++;
+          }
+          current.setDate(current.getDate() + 1);
+        }
+        return count;
+      }
+
+      function getCycleDay(today) {
+        const weekdays = countWeekdaysBetween(REFERENCE_MONDAY, today);
+        return weekdays % CYCLE_LENGTH;
+      }
+
+      function getQuotesForDay(cycleDay) {
+        const quotesPerDay = Math.ceil(quotes.length / CYCLE_LENGTH);
+        const startIndex = cycleDay * quotesPerDay;
+        const endIndex = Math.min(startIndex + quotesPerDay, quotes.length);
+        return quotes.slice(startIndex, endIndex);
+      }
+
+      function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      }
+
+      function render() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dateDisplay = document.getElementById('dateDisplay');
+        const cycleDisplay = document.getElementById('cycleDisplay');
+        const content = document.getElementById('content');
+
+        dateDisplay.textContent = formatDate(today);
+
+        if (isWeekend(today)) {
+          cycleDisplay.textContent = '';
+          content.innerHTML = `
+            <div class="weekend-message">
+              <p>Quotes resume Monday.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const cycleDay = getCycleDay(today);
+        cycleDisplay.textContent = `Day ${cycleDay + 1} of ${CYCLE_LENGTH}`;
+
+        const todaysQuotes = getQuotesForDay(cycleDay);
+
+        content.innerHTML = todaysQuotes
+          .map(
+            quote => `
+          <div class="quote-card">
+            <p class="quote-text">"${quote.text}"</p>
+            <p class="quote-author">— ${quote.author}</p>
+          </div>
+        `,
+          )
+          .join('');
+      }
+
+      render();
+    </script>
+  </body>
+</html>
