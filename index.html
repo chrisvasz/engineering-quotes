@@ -62,10 +62,49 @@
         font-style: italic;
       }
 
+      .quote-text p {
+        margin-bottom: 0.5rem;
+      }
+
+      .quote-text p:last-child {
+        margin-bottom: 0;
+      }
+
+      .quote-text code {
+        background: #f0f0f0;
+        padding: 0.1rem 0.3rem;
+        border-radius: 3px;
+        font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        font-size: 0.95em;
+        font-style: normal;
+      }
+
+      .quote-text strong {
+        font-weight: 600;
+      }
+
+      .quote-text a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+
+      .quote-text a:hover {
+        text-decoration: underline;
+      }
+
       .quote-author {
         color: #666;
         font-size: 0.9rem;
         text-align: right;
+      }
+
+      .quote-author a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+
+      .quote-author a:hover {
+        text-decoration: underline;
       }
 
       .weekend-message {
@@ -80,6 +119,7 @@
     </style>
   </head>
   <body>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <div class="container">
       <header>
         <h1>Engineering Quotes</h1>
@@ -120,7 +160,7 @@
           author: '???',
         },
         {
-          text: "“But what if we need to scale?” or “What about future requirements?” These fears often drive teams to over-architect their solutions. Here's the reality: the cost of changing a simple system is usually lower than the cost of maintaining an over-engineered one. The key is understanding that good architecture isn't about predicting the future — it's about making future changes as painless as possible.",
+          text: "“But what if we need to scale?” or “What about future requirements?” These fears often drive teams to over-architect their solutions. Here's the reality: **the cost of changing a simple system is usually lower than the cost of maintaining an over-engineered one**. The key is understanding that good architecture isn't about predicting the future — it's about making future changes as painless as possible.",
           author: 'Simen A. W. Olsen, Your Perfect Architecture Sucks',
         },
         {
@@ -153,23 +193,28 @@
         },
         {
           text: "First do it, then do it right, then do it better. Get the ugly prototype in front of users. Write the messy first draft of the design doc. Ship the MVP that embarrasses you slightly. You'll learn more from one week of real feedback than a month of theoretical debate.",
-          author: 'Addy Osmani, 21 Lessons',
+          author:
+            'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
           text: 'Your code is a strategy memo to strangers who will maintain it at 2am during an outage. Optimize for their comprehension, not your elegance. The senior engineers I respect most have learned to trade cleverness for clarity, every time.',
-          author: 'Addy Osmani, 21 Lessons',
+          author:
+            'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
           text: "Novelty is a loan you repay in outages, hiring, and cognitive overhead. Treat your technology choices like an organization with a small `innovation token` budget. Spend one each time you adopt something materially non-standard. You can't afford many. The punchline isn't `never innovate.` It's `innovate only where you're uniquely paid to innovate`. Everything else should default to boring, because boring has known failure modes.",
-          author: 'Addy Osmani, 21 Lessons',
+          author:
+            'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
           text: "The best code is the code you never had to write. Nobody gets promoted for deleting code, even though deletion often improves a system more than addition. Every line of code you don't write is a line you never have to debug, maintain, or explain. Before you build, exhaust the question: `What would happen if we just… didn't?` Sometimes the answer is `nothing bad,` and that's your solution.",
-          author: 'Addy Osmani, 21 Lessons',
+          author:
+            'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
           text: 'Writing forces clarity. The fastest way to learn something better is to try teaching it. When I explain a concept to others - in a doc, a talk, a code review comment, even just chatting with AI - I discover the gaps in my own understanding. The act of making something legible to someone else makes it more legible to me. If you think you understand something, try to explain it simply. The places where you stumble are the places where your understanding is shallow. Teaching is debugging your own mental models.',
-          author: 'Addy Osmani, 21 Lessons',
+          author:
+            'Addy Osmani, [21 Lessons](https://addyosmani.com/blog/21-lessons/)',
         },
         {
           text: 'Writing is thinking.',
@@ -180,8 +225,12 @@
           author: 'Arnold Schwarzenegger',
         },
         {
-          text: "You don't rise to the level of your goals. You fall to the level of your systems.",
+          text: "You don't rise to the level of your goals. You fall to the level of your systems. Every Olympian wants to win a gold medal. Every candidate wants to get the job. And if successful and unsuccessful people share the same goals, then the goal cannot be what differentiates the winners from the losers. It wasn’t the goal of winning the Tour de France that propelled the British Cyclists to the top of the sport. Presumably, they had wanted to win the race every year before—just like every other professional team. The goal had always been there. It was only when they implemented a system of continuous small improvements that they achieved a different outcome.",
           author: 'James Clear',
+        },
+        {
+          text: 'Good code is valuable to the business now and easy to change later.',
+          author: 'Kevin Smith',
         },
       ];
 
@@ -256,8 +305,10 @@
           .map(
             quote => `
           <div class="quote-card">
-            <p class="quote-text">"${quote.text}"</p>
-            <p class="quote-author">— ${quote.author}</p>
+            <div class="quote-text">"${marked.parse(quote.text)}"</div>
+            <div class="quote-author">— ${marked.parseInline(
+              quote.author,
+            )}</div>
           </div>
         `,
           )
